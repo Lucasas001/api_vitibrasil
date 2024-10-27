@@ -51,6 +51,17 @@ def get_data(year: int = None):
     status_code, data = fetch_json_data(url_base=url)
     return {"status_code": status_code, "data": data}
 
+@router.get("/processamento/sem_classificacao/{year}")
+@router.get("/processamento/sem_classificacao")
+def get_data(year: int = None):
+    url = f"{URL_BASE}/index.php?opcao=opt_03&subopcao=subopt_04"
+    if year:
+        url += f"&ano={year}"
+
+    status_code, data = fetch_json_data(url_base=url)
+    return {"status_code": status_code, "data": data}
+
+
 
 @router.get("/comercializacao/{year}")
 @router.get("/comercializacao/")
