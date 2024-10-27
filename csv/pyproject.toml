@@ -1,0 +1,14 @@
+[tool.poetry]
+name = "csv"
+version = "0.1.0"
+description = ""
+authors = ["Lucasas001 <lucas.as1@hotmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "3.12.*"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
