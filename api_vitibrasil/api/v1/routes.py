@@ -1,9 +1,10 @@
 import logging
 import datetime
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from api_vitibrasil.services.data_fetcher import fetch_json_data
 from api_vitibrasil.services.data_fetcher_ie import fetch_json_data_ie
 from api_vitibrasil.services.data_read import CsvRead
+from api_vitibrasil.services.verify_credentials import verify_credentials
 
 
 logging.basicConfig(
@@ -14,177 +15,161 @@ router = APIRouter()
 URL_BASE = "http://vitibrasil.cnpuv.embrapa.br"
 
 
-@router.get("/producao/{year}")
-@router.get("/producao")
-def get_data_viniferas(year: int = None):
-    url = f"{URL_BASE}/indexxxx.php?opcao=opt_02"
+def fetch_data_with_fallback(endpoint: str, csv_filename: str, year: int = None):
 
-    if year:
-        url += f"&ano={year}"
-    else:
-        year = datetime.datetime.now().year
+    if year is None:
+        year = datetime.datetime.now().year - 1
 
+    url = f"{URL_BASE}/{endpoint}&ano={year}"
     status_code, data = fetch_json_data(url_base=url)
 
     if status_code != 200:
-        logging.warning(
-            f"status_code: {status_code}, usando rota alternativa, consultando do CSV"
-        )
-        data = CsvRead.process_csv("Producao.csv", year)
+        logging.warning("Using alternative route, fetching from CSV")
+        data = CsvRead.process_csv(csv_filename, year)
+
     return {"status_code": status_code, "data": data}
+
+
+@router.get("/producao/{year}")
+@router.get("/producao")
+def get_data_producao(year: int = None, username: str = Depends(verify_credentials)):
+    return fetch_data_with_fallback("inde.php?opcao=opt_02", "Producao.csv", year)
 
 
 @router.get("/processamento/viniferas/{year}")
 @router.get("/processamento/viniferas")
-def get_data_viniferas(year: int = None):
-    url = f"{URL_BASE}/index.php?opcao=opt_03&subopcao=subopt_01"
-    if year:
-        url += f"&ano={year}"
-
-    status_code, data = fetch_json_data(url_base=url)
-    return {"status_code": status_code, "data": data}
+def get_data_processamento_viniferas(
+    year: int = None, username: str = Depends(verify_credentials)
+):
+    return fetch_data_with_fallback(
+        "index.php?opcao=opt_03&subopcao=subopt_01", "ProcessaViniferas.csv", year
+    )
 
 
 @router.get("/processamento/americanas_e_hibridas/{year}")
 @router.get("/processamento/americanas_e_hibridas")
-def get_data_americanas_hibridas(year: int = None):
-    url = f"{URL_BASE}/index.php?opcao=opt_03&subopcao=subopt_02"
-    if year:
-        url += f"&ano={year}"
-
-    status_code, data = fetch_json_data(url_base=url)
-    return {"status_code": status_code, "data": data}
+def get_data_processamento_americanas_hibridas(
+    year: int = None, username: str = Depends(verify_credentials)
+):
+    return fetch_data_with_fallback(
+        "index.php?opcao=opt_03&subopcao=subopt_02", "ProcessaAmericanas.csv", year
+    )
 
 
 @router.get("/processamento/uvas_de_mesa/{year}")
 @router.get("/processamento/uvas_de_mesa")
-def get_data(year: int = None):
-    url = f"{URL_BASE}/index.php?opcao=opt_03&subopcao=subopt_03"
-    if year:
-        url += f"&ano={year}"
-
-    status_code, data = fetch_json_data(url_base=url)
-    return {"status_code": status_code, "data": data}
+def get_data_processamento_uvas_mesa(
+    year: int = None, username: str = Depends(verify_credentials)
+):
+    return fetch_data_with_fallback(
+        "index.php?opcao=opt_03&subopcao=subopt_03", "ProcessaMesa.csv", year
+    )
 
 
 @router.get("/processamento/sem_classificacao/{year}")
 @router.get("/processamento/sem_classificacao")
-def get_data(year: int = None):
-    url = f"{URL_BASE}/index.php?opcao=opt_03&subopcao=subopt_04"
-    if year:
-        url += f"&ano={year}"
-
-    status_code, data = fetch_json_data(url_base=url)
-    return {"status_code": status_code, "data": data}
+def get_data_processamento_sem_classificacao(
+    year: int = None, username: str = Depends(verify_credentials)
+):
+    return fetch_data_with_fallback(
+        "index.php?opcao=opt_03&subopcao=subopt_04", "ProcessaSemclass.csv", year
+    )
 
 
 @router.get("/comercializacao/{year}")
 @router.get("/comercializacao/")
-def get_data(year: int = None):
-
-    url = f"{URL_BASE}/index.php?opcao=opt_04"
-    if year:
-        url += f"&ano={year}"
-
-    status_code, data = fetch_json_data(url_base=url)
-    return {"status_code": status_code, "data": data}
+def get_data_comercializacao(
+    year: int = None, username: str = Depends(verify_credentials)
+):
+    return fetch_data_with_fallback("index.php?opcao=opt_04", "Comercio.csv", year)
 
 
 @router.get("/importacao/vinhos_de_mesa/{year}")
 @router.get("/importacao/vinhos_de_mesa")
-def get_data(year: int = None):
-    url = f"{URL_BASE}/index.php?subopcao=subopt_01&opcao=opt_05"
-    if year:
-        url += f"&ano={year}"
-
-    status_code, data = fetch_json_data_ie(url_base=url)
-    return {"status_code": status_code, "data": data}
+def get_data_importacao_vinhos_mesa(
+    year: int = None, username: str = Depends(verify_credentials)
+):
+    return fetch_data_with_fallback(
+        "index.php?subopcao=subopt_01&opcao=opt_05", "ImpVinhos.csv", year
+    )
 
 
 @router.get("/importacao/espumantes/{year}")
 @router.get("/importacao/espumantes")
-def get_data(year: int = None):
-    url = f"{URL_BASE}/index.php?subopcao=subopt_02&opcao=opt_05"
-    if year:
-        url += f"&ano={year}"
-
-    status_code, data = fetch_json_data_ie(url_base=url)
-    return {"status_code": status_code, "data": data}
+def get_data_importacao_espumantes(
+    year: int = None, username: str = Depends(verify_credentials)
+):
+    return fetch_data_with_fallback(
+        "index.php?subopcao=subopt_02&opcao=opt_05", "ImpEspumantes.csv", year
+    )
 
 
 @router.get("/importacao/uvas_frescas/{year}")
 @router.get("/importacao/uvas_frescas")
-def get_data(year: int = None):
-    url = f"{URL_BASE}/index.php?subopcao=subopt_03&opcao=opt_05"
-    if year:
-        url += f"&ano={year}"
-
-    status_code, data = fetch_json_data_ie(url_base=url)
-    return {"status_code": status_code, "data": data}
+def get_data_importacao_uvas_frescas(
+    year: int = None, username: str = Depends(verify_credentials)
+):
+    return fetch_data_with_fallback(
+        "index.php?subopcao=subopt_03&opcao=opt_05", "ImpFrescas.csv", year
+    )
 
 
 @router.get("/importacao/uvas_passas/{year}")
 @router.get("/importacao/uvas_passas")
-def get_data(year: int = None):
-    url = f"{URL_BASE}/index.php?subopcao=subopt_04&opcao=opt_05"
-    if year:
-        url += f"&ano={year}"
-
-    status_code, data = fetch_json_data_ie(url_base=url)
-    return {"status_code": status_code, "data": data}
+def get_data_importacao_uvas_passas(
+    year: int = None, username: str = Depends(verify_credentials)
+):
+    return fetch_data_with_fallback(
+        "index.php?subopcao=subopt_04&opcao=opt_05", "ImpPassas.csv", year
+    )
 
 
 @router.get("/importacao/suco_de_uva/{year}")
 @router.get("/importacao/suco_de_uva")
-def get_data(year: int = None):
-    url = f"{URL_BASE}/index.php?subopcao=subopt_05&opcao=opt_05"
-    if year:
-        url += f"&ano={year}"
-
-    status_code, data = fetch_json_data_ie(url_base=url)
-    return {"status_code": status_code, "data": data}
+def get_data_importacao_suco_uva(
+    year: int = None, username: str = Depends(verify_credentials)
+):
+    return fetch_data_with_fallback(
+        "index.php?subopcao=subopt_05&opcao=opt_05", "ImpSuco.csv", year
+    )
 
 
 # Export
 @router.get("/exportacao/vinhos_de_mesa/{year}")
 @router.get("/exportacao/vinhos_de_mesa")
-def get_data(year: int = None):
-    url = f"{URL_BASE}/index.php?subopcao=subopt_01&opcao=opt_06"
-    if year:
-        url += f"&ano={year}"
-
-    status_code, data = fetch_json_data_ie(url_base=url)
-    return {"status_code": status_code, "data": data}
+def get_data_exportacao_vinhos_mesa(
+    year: int = None, username: str = Depends(verify_credentials)
+):
+    return fetch_data_with_fallback(
+        "index.php?subopcao=subopt_01&opcao=opt_06", "ExpVinho.csv", year
+    )
 
 
 @router.get("/exportacao/espumantes/{year}")
 @router.get("/exportacao/espumantes")
-def get_data(year: int = None):
-    url = f"{URL_BASE}/index.php?subopcao=subopt_02&opcao=opt_06"
-    if year:
-        url += f"&ano={year}"
-
-    status_code, data = fetch_json_data_ie(url_base=url)
-    return {"status_code": status_code, "data": data}
+def get_data_exportacao_espumantes(
+    year: int = None, username: str = Depends(verify_credentials)
+):
+    return fetch_data_with_fallback(
+        "index.php?subopcao=subopt_02&opcao=opt_06", "ExpEspumantes.csv", year
+    )
 
 
 @router.get("/exportacao/uvas_frescas/{year}")
 @router.get("/exportacao/uvas_frescas")
-def get_data(year: int = None):
-    url = f"{URL_BASE}/index.php?subopcao=subopt_03&opcao=opt_06"
-    if year:
-        url += f"&ano={year}"
-
-    status_code, data = fetch_json_data_ie(url_base=url)
-    return {"status_code": status_code, "data": data}
+def get_data_exportacao_uvas_frescas(
+    year: int = None, username: str = Depends(verify_credentials)
+):
+    return fetch_data_with_fallback(
+        "index.php?subopcao=subopt_03&opcao=opt_06", "ExpUva.csv", year
+    )
 
 
 @router.get("/exportacao/suco_de_uva/{year}")
 @router.get("/exportacao/suco_de_uva")
-def get_data(year: int = None):
-    url = f"{URL_BASE}/index.php?subopcao=subopt_04&opcao=opt_06"
-    if year:
-        url += f"&ano={year}"
-
-    status_code, data = fetch_json_data_ie(url_base=url)
-    return {"status_code": status_code, "data": data}
+def get_data_exportacao_suco_uva(
+    year: int = None, username: str = Depends(verify_credentials)
+):
+    return fetch_data_with_fallback(
+        "index.php?subopcao=subopt_04&opcao=opt_06", "ExpSuco.csv", year
+    )
