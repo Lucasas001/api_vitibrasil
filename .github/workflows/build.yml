@@ -11,7 +11,8 @@ jobs:
       name: "production"
     env:
       IMAGE_NAME: "api-vitibrasil"
-      PROJECT_ID: "thinking-leaf-440018-f4"
+      REPOSITORY_NAME: "api-vitibrasil"
+      GCP_PROJECT_ID: "thinking-leaf-440018-f4"
       REGION: "us-central1"
 
     steps:
@@ -44,10 +45,8 @@ jobs:
 
       - name: Tag Docker image
         run: |
-          IMAGE_URI="${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/repository/${{ env.IMAGE_NAME }}"
-          docker tag $IMAGE_NAME $IMAGE_URI
+          docker tag $IMAGE_NAME:latest us-central1-docker.pkg.dev/$GCP_PROJECT_ID/$REPOSITORY_NAME/$IMAGE_NAME:latest
 
       - name: Push Docker image to Google Artifact Registry
         run: |
-          echo "Pushing Docker image to Google Artifact Registry..."
-          docker push $IMAGE_URI
+          docker push us-central1-docker.pkg.dev/$GCP_PROJECT_ID/$REPOSITORY_NAME/$IMAGE_NAME:latest
