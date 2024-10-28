@@ -5,6 +5,7 @@ import time
 import logging
 from bs4 import BeautifulSoup
 
+
 def remove_dot_for_int_value(column: str):
     try:
         number = float(column)
@@ -13,6 +14,7 @@ def remove_dot_for_int_value(column: str):
         return str(column)
     except ValueError:
         return column
+
 
 def content_parser(response):
     soup = BeautifulSoup(response.content, "html.parser")
@@ -30,14 +32,16 @@ def content_parser(response):
         cols = row.find_all("td")
         if len(cols) >= 3:
             country = cols[0].get_text(strip=True)
-            quantity = cols[1].get_text(strip=True).replace('-', '0')
-            value = cols[2].get_text(strip=True).replace('-', '0')
+            quantity = cols[1].get_text(strip=True).replace("-", "0")
+            value = cols[2].get_text(strip=True).replace("-", "0")
 
-            data.append({
-                "paises": country,
-                "quantidade_kg": remove_dot_for_int_value(quantity),
-                "valor_us": remove_dot_for_int_value(value)
-            })
+            data.append(
+                {
+                    "paises": country,
+                    "quantidade_kg": remove_dot_for_int_value(quantity),
+                    "valor_us": remove_dot_for_int_value(value),
+                }
+            )
 
     tfoot = table.find("tfoot")
     if tfoot:
@@ -48,26 +52,28 @@ def content_parser(response):
                 total_country = tds[0].get_text(strip=True)
                 total_total_quantity = tds[1].get_text(strip=True)
                 total_value = tds[2].get_text(strip=True)
-                data.append({
-                    "paises": total_country,
-                    "quantidade_kg": remove_dot_for_int_value(total_total_quantity),
-                    "valor_us": remove_dot_for_int_value(total_value)
-                })
+                data.append(
+                    {
+                        "paises": total_country,
+                        "quantidade_kg": remove_dot_for_int_value(total_total_quantity),
+                        "valor_us": remove_dot_for_int_value(total_value),
+                    }
+                )
     else:
-        data.append({
-            "paises": "Total",
-            "quantidade_kg": "0",
-            "valor_us": "0"
-        })
+        data.append({"paises": "Total", "quantidade_kg": "0", "valor_us": "0"})
 
     return data
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
+
 
 def fetch_json_data_ie(url_base: str):
     max_attempts = 3
     attempts = 0
-    wait_time = 120
+    wait_time = 5
     response = None
 
     while attempts < max_attempts:
@@ -82,9 +88,14 @@ def fetch_json_data_ie(url_base: str):
             attempts += 1
             logging.error(f"Error on attempt {attempts} of {max_attempts}. Error: {e}")
             if attempts == max_attempts:
-                logging.critical(f"Failed to retrieve data after {max_attempts} attempts.")
+                logging.critical(
+                    f"Failed to retrieve data after {max_attempts} attempts."
+                )
                 return response.status_code if response else None, [
-                    {"error": f"Failed to retrieve data after {max_attempts} attempts: {e}"}]
+                    {
+                        "error": f"Failed to retrieve data after {max_attempts} attempts: {e}"
+                    }
+                ]
             else:
                 logging.info(f"Waiting {wait_time} seconds before the next attempt.")
                 time.sleep(wait_time)

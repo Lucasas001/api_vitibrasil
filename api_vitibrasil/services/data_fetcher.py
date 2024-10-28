@@ -6,15 +6,17 @@ import time
 import logging
 from bs4 import BeautifulSoup
 
+
 def remove_dot_for_int_value(column: str):
     try:
         number = float(column)
         if number.is_integer():
-            return str(column).replace(".","")
+            return str(column).replace(".", "")
         else:
             return str(column)
     except ValueError:
         return column
+
 
 def content_parser(response):
     soup = BeautifulSoup(response.content, "html.parser")
@@ -40,19 +42,23 @@ def content_parser(response):
         if item_type == "tb_item":
             current_item = first_td.get_text(strip=True)
             current_value = cols[1].get_text(strip=True) if len(cols) > 1 else None
-            data.append({
-                "item": current_item,
-                "subitem": current_item,
-                "value": remove_dot_for_int_value(current_value)
-            })
+            data.append(
+                {
+                    "item": current_item,
+                    "subitem": current_item,
+                    "value": remove_dot_for_int_value(current_value),
+                }
+            )
         elif item_type == "tb_subitem" and current_item:
             subitem = first_td.get_text(strip=True)
             sub_value = cols[1].get_text(strip=True) if len(cols) > 1 else None
-            data.append({
-                "item": current_item,
-                "subitem": subitem,
-                "value": remove_dot_for_int_value(sub_value)
-            })
+            data.append(
+                {
+                    "item": current_item,
+                    "subitem": subitem,
+                    "value": remove_dot_for_int_value(sub_value),
+                }
+            )
 
     tfoot = table.find("tfoot")
     if tfoot:
@@ -62,28 +68,28 @@ def content_parser(response):
             if len(tds) >= 2:
                 total_item = tds[0].get_text(strip=True)
                 total_value = tds[1].get_text(strip=True)
-                data.append({
-                    "item": total_item,
-                    "subitem": None,
-                    "value": remove_dot_for_int_value(total_value)
-                })
+                data.append(
+                    {
+                        "item": total_item,
+                        "subitem": None,
+                        "value": remove_dot_for_int_value(total_value),
+                    }
+                )
     else:
-        data.append({
-            "item": "Total",
-            "subitem": None,
-            "value": "Unavailable"
-        })
+        data.append({"item": "Total", "subitem": None, "value": "Unavailable"})
 
     return data
 
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 
 
 def fetch_json_data(url_base: str):
     max_attempts = 3
     attempts = 0
-    wait_time = 120
+    wait_time = 5
     response = None
 
     while attempts < max_attempts:
@@ -98,9 +104,14 @@ def fetch_json_data(url_base: str):
             attempts += 1
             logging.error(f"Error on attempt {attempts} of {max_attempts}. Error: {e}")
             if attempts == max_attempts:
-                logging.critical(f"Failed to retrieve data after {max_attempts} attempts.")
+                logging.critical(
+                    f"Failed to retrieve data after {max_attempts} attempts."
+                )
                 return response.status_code if response else None, [
-                    {"error": f"Failed to retrieve data after {max_attempts} attempts: {e}"}]
+                    {
+                        "error": f"Failed to retrieve data after {max_attempts} attempts: {e}"
+                    }
+                ]
             else:
                 logging.info(f"Waiting {wait_time} seconds before the next attempt.")
                 time.sleep(wait_time)
