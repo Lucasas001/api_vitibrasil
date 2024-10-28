@@ -56,7 +56,7 @@ jobs:
         run: |
           echo "Deploying to Cloud Run..."
           gcloud run deploy ${{ env.SERVICE_NAME }} \
-            --image $IMAGE_URI \
+            --image us-central1-docker.pkg.dev/$GCP_PROJECT_ID/$REPOSITORY_NAME/$IMAGE_NAME:latest \
             --region ${{ env.REGION }} \
             --platform managed \
             --allow-unauthenticated
