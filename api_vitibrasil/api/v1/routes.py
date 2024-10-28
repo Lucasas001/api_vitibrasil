@@ -1,21 +1,36 @@
 import logging
+import datetime
 from fastapi import APIRouter
 from api_vitibrasil.services.data_fetcher import fetch_json_data
 from api_vitibrasil.services.data_fetcher_ie import fetch_json_data_ie
+from api_vitibrasil.services.data_read import CsvRead
 
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 router = APIRouter()
 
 URL_BASE = "http://vitibrasil.cnpuv.embrapa.br"
+
+
 @router.get("/producao/{year}")
 @router.get("/producao")
 def get_data_viniferas(year: int = None):
-    url = f"{URL_BASE}/index.php?opcao=opt_02"
+    url = f"{URL_BASE}/indexxxx.php?opcao=opt_02"
+
     if year:
         url += f"&ano={year}"
+    else:
+        year = datetime.datetime.now().year
 
     status_code, data = fetch_json_data(url_base=url)
+
+    if status_code != 200:
+        logging.warning(
+            f"status_code: {status_code}, usando rota alternativa, consultando do CSV"
+        )
+        data = CsvRead.process_csv("Producao.csv", year)
     return {"status_code": status_code, "data": data}
 
 
@@ -51,6 +66,7 @@ def get_data(year: int = None):
     status_code, data = fetch_json_data(url_base=url)
     return {"status_code": status_code, "data": data}
 
+
 @router.get("/processamento/sem_classificacao/{year}")
 @router.get("/processamento/sem_classificacao")
 def get_data(year: int = None):
@@ -60,7 +76,6 @@ def get_data(year: int = None):
 
     status_code, data = fetch_json_data(url_base=url)
     return {"status_code": status_code, "data": data}
-
 
 
 @router.get("/comercializacao/{year}")
@@ -73,6 +88,7 @@ def get_data(year: int = None):
 
     status_code, data = fetch_json_data(url_base=url)
     return {"status_code": status_code, "data": data}
+
 
 @router.get("/importacao/vinhos_de_mesa/{year}")
 @router.get("/importacao/vinhos_de_mesa")
@@ -95,6 +111,7 @@ def get_data(year: int = None):
     status_code, data = fetch_json_data_ie(url_base=url)
     return {"status_code": status_code, "data": data}
 
+
 @router.get("/importacao/uvas_frescas/{year}")
 @router.get("/importacao/uvas_frescas")
 def get_data(year: int = None):
@@ -105,6 +122,7 @@ def get_data(year: int = None):
     status_code, data = fetch_json_data_ie(url_base=url)
     return {"status_code": status_code, "data": data}
 
+
 @router.get("/importacao/uvas_passas/{year}")
 @router.get("/importacao/uvas_passas")
 def get_data(year: int = None):
@@ -114,6 +132,7 @@ def get_data(year: int = None):
 
     status_code, data = fetch_json_data_ie(url_base=url)
     return {"status_code": status_code, "data": data}
+
 
 @router.get("/importacao/suco_de_uva/{year}")
 @router.get("/importacao/suco_de_uva")
@@ -137,6 +156,7 @@ def get_data(year: int = None):
     status_code, data = fetch_json_data_ie(url_base=url)
     return {"status_code": status_code, "data": data}
 
+
 @router.get("/exportacao/espumantes/{year}")
 @router.get("/exportacao/espumantes")
 def get_data(year: int = None):
@@ -146,6 +166,7 @@ def get_data(year: int = None):
 
     status_code, data = fetch_json_data_ie(url_base=url)
     return {"status_code": status_code, "data": data}
+
 
 @router.get("/exportacao/uvas_frescas/{year}")
 @router.get("/exportacao/uvas_frescas")
@@ -157,6 +178,7 @@ def get_data(year: int = None):
     status_code, data = fetch_json_data_ie(url_base=url)
     return {"status_code": status_code, "data": data}
 
+
 @router.get("/exportacao/suco_de_uva/{year}")
 @router.get("/exportacao/suco_de_uva")
 def get_data(year: int = None):
@@ -166,6 +188,3 @@ def get_data(year: int = None):
 
     status_code, data = fetch_json_data_ie(url_base=url)
     return {"status_code": status_code, "data": data}
-
-
-
