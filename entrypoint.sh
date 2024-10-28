@@ -1,7 +1,6 @@
 #!/bin/sh
 
 # Inicia o cron em segundo plano
-cron && tail -f /var/log/cron.log &
 
 echo "Executa o script csv_downloader.py na inicialização"
 poetry run python api_vitibrasil/modules/csv_downloader.py
