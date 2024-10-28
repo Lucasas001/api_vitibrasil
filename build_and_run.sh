@@ -13,6 +13,5 @@ fi
 
 docker run -it --rm \
     --name $CONTAINER_NAME \
-    -v "$(pwd):/app" \
     -p 8000:8000 \
     $IMAGE_NAME
