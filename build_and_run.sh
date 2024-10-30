@@ -13,5 +13,5 @@ fi
 
 docker run -it --rm \
     --name $CONTAINER_NAME \
-    -p 8000:8000 \
+    -p 8080:8080 \
     $IMAGE_NAME

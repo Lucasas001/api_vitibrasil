@@ -33,7 +33,10 @@ def fetch_data_with_fallback(endpoint: str, csv_filename: str, year: int = None)
 @router.get("/producao/{year}")
 @router.get("/producao")
 def get_data_producao(year: int = None, username: str = Depends(verify_credentials)):
-    return fetch_data_with_fallback("inde.php?opcao=opt_02", "Producao.csv", year)
+    """
+    Podemos colocar uma doc aqui....
+    """
+    return fetch_data_with_fallback("index.php?opcao=opt_02", "Producao.csv", year)
 
 
 @router.get("/processamento/viniferas/{year}")
