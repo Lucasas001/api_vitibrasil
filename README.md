@@ -15,12 +15,6 @@ Ambos trabalharam de forma colaborativa para criar uma solução robusta e bem d
 
 Desenvolver uma REST API em Python que consulte dados do site da [Embrapa](http://vitibrasil.cnpuv.embrapa.br/), documentada e com autenticação básica para fins acadêmicos. O projeto inclui um plano de arquitetura para o deploy, garantindo disponibilidade e atualização contínua dos dados, e está acessível em um MVP compartilhável no GitHub. A API foi desenhada para ser utilizada em cenários onde a atualização e acessibilidade dos dados são essenciais, com potencial de expansão para aplicações em análises mais avançadas.
 
-### Acesso Temporário
-
-A API está publicada no **Cloud Run** para avaliação deste desafio e pode ser acessada temporariamente através do seguinte link: [https://api-vitibrasil-728626604116.us-central1.run.app](https://api-vitibrasil-728626604116.us-central1.run.app).
-
-> **Obs.:** Por se tratar de uma implementação com finalidade acadêmica, limitamos os recursos dos servidores para evitar consumo excessivo de dados e custos desnecessários. Portanto, o uso deste link pode apresentar lentidões/indisponibilidade devido a essas restrições.
-
 ## Como Rodar o Projeto Localmente
 
 Para rodar este projeto localmente, siga as instruções abaixo:
@@ -45,6 +39,13 @@ bash build_and_run.sh
 
 Essas etapas permitem que você rode o projeto localmente, explore os endpoints e teste as funcionalidades conforme necessário.
 
+### Acesso Temporário
+
+A API está publicada no **Cloud Run** para avaliação deste desafio e pode ser acessada temporariamente através do seguinte link: [https://api-vitibrasil-728626604116.us-central1.run.app](https://api-vitibrasil-728626604116.us-central1.run.app).
+Acessa a documentação no link: [docs](https://api-vitibrasil-728626604116.us-central1.run.app/docs)
+
+> **Obs.:** Por se tratar de uma implementação com finalidade acadêmica, limitamos os recursos dos servidores para evitar consumo excessivo de dados e custos desnecessários. Portanto, o uso deste link pode apresentar lentidões/indisponibilidade devido a essas restrições.
+
 ## Arquitetura da API
 
 Nossa API foi desenvolvida usando **FastAPI**, um framework moderno e performático para construção de APIs. Abaixo estão os principais motivos para a escolha do FastAPI:
@@ -58,7 +59,7 @@ Como o projeto é voltado para fins acadêmicos, implementamos uma camada de **A
 
 ### Consumo de Dados e Redundância
 
-A API foi projetada para consumir dados através de **web scraping**, coletando informações do site ['http://vitibrasil.cnpuv.embrapa.br/'](http://vitibrasil.cnpuv.embrapa.br/). Para garantir a resiliência e a disponibilidade das informações, a arquitetura inclui uma estratégia de redundância:
+A API foi projetada para consumir dados através de **web scraping**, coletando informações do site [http://vitibrasil.cnpuv.embrapa.br/](http://vitibrasil.cnpuv.embrapa.br/). Para garantir a resiliência e a disponibilidade das informações, a arquitetura inclui uma estratégia de redundância:
 
 1. **Requisições ao Site**: A API tenta coletar dados diretamente do site sempre que é chamada, com uma tolerância de falhas. Se o site estiver offline ou a API falhar três vezes consecutivas ao tentar acessá-lo, um sistema de fallback é ativado.
 
@@ -78,11 +79,12 @@ Esse fluxo proporciona uma arquitetura robusta, onde os dados são mantidos loca
 1. **Cliente** faz uma requisição para uma rota da API.
 2. **API** tenta coletar dados do site via web scraping.
 3. Se o **site estiver offline ou ocorrerem 3 falhas**, a API retorna dados dos arquivos CSV locais.
-4. **Processo de atualização** verifica o site a cada 1 hora para substituir os
+4. **Processo de atualização** verifica o site a cada 1 hora para substituir ou atualizar os csv.
 
 # Deploy
 
 Desenho do processo de Deploy:
+
 ![Alt text](./images/DEPLOY.jpg)
 
 Para explicar o processo de **Deploy** de maneira detalhada, aqui está um resumo do que cada ferramenta e etapa faz:

@@ -40,6 +40,11 @@ jobs:
         run: |
           gcloud auth configure-docker us-central1-docker.pkg.dev --quiet
 
+      - name: Run tests with Pytest
+        run: |-
+          poetry install
+          pytest -v ./tests/test.py
+
       - name: Build Docker image
         run: |
           docker build -t $IMAGE_NAME:latest .
