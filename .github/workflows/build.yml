@@ -20,6 +20,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.12"
+
       - name: Authenticate to Google Cloud
         id: auth
         uses: google-github-actions/auth@v2
