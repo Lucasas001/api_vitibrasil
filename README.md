@@ -2,6 +2,31 @@
 
 Tech Challenge: API Vitibrasil
 
+# Menu
+
+- [Alunos](#alunos)
+- [Objetivo do Projeto](#objetivo-do-projeto)
+- [Como Rodar o Projeto Localmente](#como-rodar-o-projeto-localmente)
+  - [Clone o repositório e execute o build](#clone-o-repositório-e-execute-o-build)
+  - [Acessando a API e a Documentação](#acessando-a-api-e-a-documentação)
+  - [Acesso Temporário](#acesso-temporário)
+- [Arquitetura da API](#arquitetura-da-api)
+  - [Autenticação](#autenticação)
+  - [Consumo de Dados e Redundância](#consumo-de-dados-e-redundância)
+  - [Atualização de Dados em CSV](#atualização-de-dados-em-csv)
+  - [Fluxo Resumido](#fluxo-resumido)
+- [Deploy](#deploy)
+- [Etapas do Fluxo de Deploy](#etapas-do-fluxo-de-deploy)
+  - [1. Push do Código para o GitHub](#1-push-do-código-para-o-github)
+  - [2. GitHub Actions e o Processo de Build](#2-github-actions-e-o-processo-de-build)
+  - [3. Deploy para o Cloud Run](#3-deploy-para-o-cloud-run)
+  - [Benefícios do Processo de Deploy Automatizado](#benefícios-do-processo-de-deploy-automatizado)
+- [Documentação dos Testes para as Rotas da API `api_vitibrasil`](#documentação-dos-testes-para-as-rotas-da-api-api_vitibrasil)
+- [Descrição dos Testes](#descrição-dos-testes)
+  - [`test_routes`](#test_routes)
+  - [`test_routes_fallback_to_csv`](#test_routes_fallback_to_csv)
+- [Benefícios dos Testes](#benefícios-dos-testes)
+
 ## Alunos
 
 Este projeto foi desenvolvido pelos alunos:
@@ -123,3 +148,28 @@ Etapas do Fluxo de Deploy
 - **Escalabilidade e Confiabilidade com o Cloud Run:** O Cloud Run gerencia a escalabilidade do aplicativo, ajustando automaticamente os recursos conforme o tráfego aumenta ou diminui.
 
 Esse fluxo permite um desenvolvimento contínuo e uma entrega rápida de novas funcionalidades e correções na API, mantendo o ambiente de produção sempre atualizado e estável.
+
+# Documentação dos Testes para as Rotas da API `api_vitibrasil`
+
+Este conjunto de testes automatizados verifica o comportamento das principais rotas da API `api_vitibrasil`, que abrangem dados de produção, processamento, importação e exportação de uvas e vinhos.
+
+## Descrição dos Testes
+
+### `test_routes`
+
+- **Descrição**: Este teste percorre todas as rotas principais da API, simulando uma resposta bem-sucedida com dados para verificar a estrutura e o conteúdo da resposta.
+- **Objetivo**: Assegurar que todas as rotas da API respondem com o código `200 OK` e que a resposta possui a chave `"data"` contendo uma lista, indicando que os dados foram carregados corretamente.
+
+### `test_routes_fallback_to_csv`
+
+- **Descrição**: Testa o mecanismo de fallback de cada rota. Quando a API externa falha (retorna `500`), a API `api_vitibrasil` deve utilizar um arquivo CSV local como fonte de dados.
+- **Objetivo**: Garantir que o sistema é resiliente, respondendo com `200 OK` e a estrutura correta mesmo em caso de falha na conexão com a API externa.
+
+## Benefícios dos Testes
+
+- **Confiabilidade**: Ao verificar todas as rotas principais, os testes garantem que a API está funcionando conforme o esperado e retornando dados consistentes.
+- **Resiliência**: O teste de fallback para CSV confirma que, em caso de falha da API externa, o sistema ainda consegue fornecer dados, evitando interrupções no serviço.
+- **Segurança e Controle de Acesso**: Cada requisição inclui autenticação básica, garantindo que apenas usuários autorizados podem acessar os dados.
+- **Facilidade de Manutenção**: Ao automatizar os testes para todas as rotas, os desenvolvedores podem rapidamente validar alterações ou atualizações na API sem a necessidade de testes manuais extensivos.
+
+Estes testes cobrem os fluxos principais e reforçam a estabilidade e segurança da API `api_vitibrasil`, garantindo a continuidade do serviço em diferentes condições.
