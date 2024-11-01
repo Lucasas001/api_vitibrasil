@@ -1,10 +1,12 @@
 FROM python:3.12-slim
 
 WORKDIR /app
+
 COPY . /app
 
-RUN pip install poetry
-RUN poetry config virtualenvs.create false && poetry install --no-interaction --no-ansi
+RUN pip install poetry && \
+    poetry config virtualenvs.create false && \
+    poetry install --no-interaction --no-ansi
 
 RUN apt-get update && \
     apt-get install -y cron && \
@@ -14,4 +16,4 @@ RUN apt-get update && \
     crontab /etc/cron.d/my-cron-job && \
     touch /var/log/cron.log
 
-ENTRYPOINT ["/bin/sh","entrypoint.sh"]
+ENTRYPOINT ["/bin/sh", "entrypoint.sh"]
