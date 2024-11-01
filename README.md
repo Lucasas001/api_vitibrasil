@@ -73,6 +73,8 @@ Acessa a documentação no link: [docs](https://api-vitibrasil-728626604116.us-c
 
 ## Arquitetura da API
 
+![Alt text](./images/api_fluxo.png)
+
 Nossa API foi desenvolvida usando **FastAPI**, um framework moderno e performático para construção de APIs. Abaixo estão os principais motivos para a escolha do FastAPI:
 
 - **Performance**: Baseada em ASGI e utilizando AsyncIO do Python, o que torna o FastAPI altamente eficiente, ideal para aplicações que exigem respostas rápidas.
