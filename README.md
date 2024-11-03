@@ -80,6 +80,47 @@ Nossa API foi desenvolvida usando **FastAPI**, um framework moderno e performát
 - **Performance**: Baseada em ASGI e utilizando AsyncIO do Python, o que torna o FastAPI altamente eficiente, ideal para aplicações que exigem respostas rápidas.
 - **Documentação Automática**: FastAPI gera uma documentação interativa e intuitiva (usando Swagger UI e ReDoc), facilitando o uso e entendimento da API para desenvolvedores. A documentação automática permite interações práticas, facilitando o teste e entendimento das rotas.
 
+### Estrutura do projeto
+
+```
+├── api_vitibrasil                    # Diretório raiz do projeto 'api_vitibrasil'.
+│   ├── api                           # Pasta principal da API e definição de rotas.
+│   │   ├── __init__.py
+│   │   └── v1                        # Diretório da versão 1 da API para gerenciamento de rotas.
+│   │       ├── __init__.py
+│   │       └── routes.py             # Define as rotas da API e tratamento de requisições.
+│   ├── csv                           # Pasta para armazenar arquivos CSV brutos e processados.
+│   │   ├── csv_raw                   # Diretório para arquivos CSV brutos baixados.
+│   │       └── ********.csv
+│   │   └── csv_refined               # Diretório para arquivos CSV refinados/processados.
+│   │       └── ********.csv
+│   ├── __init__.py
+│   ├── main.py                       # Ponto de entrada para executar a aplicação.
+│   ├── modules                       # Pasta contendo módulos para tarefas de processamento.
+│   │   ├── csv_downloader.py         # Módulo para baixar arquivos CSV.
+│   │   └── csv_processor.py          # Módulo para processar e refinar arquivos CSV.
+│   ├── services                      # Pasta para módulos de serviço relacionados a operações de dados.
+│   │   ├── data_fetcher_ie.py        # Módulo para buscar dados com lógica Importação e Exportação.
+│   │   ├── data_fetcher.py           # Módulo para buscar dados com lógica generica.
+│   │   ├── data_read.py              # Módulo para ler os CSV.
+│   │   └── verify_credentials.py     # Módulo para verificar credenciais de acesso da API.
+│   └── start.py                      # Script para iniciar a aplicação e configurar os serviços.
+├── build_and_run.sh                  # Script para construir e executar o contêiner Docker.
+├── crontab                           # Arquivo de configuração do cron para agendar tarefas.
+├── Dockerfile                        # Dockerfile para construir a imagem Docker.
+├── entrypoint.sh                     # Script de entrada para inicialização do contêiner Docker.
+├── images                            # Pasta para armazenar imagens relacionadas ao projeto.
+│   ├── api_fluxo.png
+│   └── DEPLOY.jpg
+├── poetry.lock                       # Arquivo para o gerenciador de pacotes Poetry.
+├── pyproject.toml                    # Arquivo de configuração do projeto para o Poetry.
+├── README.md
+└── tests                             # Pasta para scripts de teste.
+    ├── __init__.py
+    └── test.py                       # Contém casos de teste para validação de funcionalidades.
+
+```
+
 ### Autenticação
 
 Como o projeto é voltado para fins acadêmicos, implementamos uma camada de **Autenticação HTTP Básica**. Essa autenticação foi incluída para demonstrar como uma camada de segurança pode funcionar em uma API. Em ambientes de produção, seria recomendável usar métodos mais seguros, como OAuth2 ou autenticação baseada em token (JWT).
