@@ -62,7 +62,7 @@ bash build_and_run.sh
 > - **Usuário**: `fiap`
 > - **Senha**: `FIAP123`
 
-Essas etapas permitem que você rode o projeto localmente, explore os endpoints e teste as funcionalidades conforme necessário.
+Essas etapas permitem que você rode o projeto localmente, explore os endpoints e teste as funcionalidades conforme necessário...
 
 ### Acesso Temporário
 
