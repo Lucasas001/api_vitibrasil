@@ -1,2 +1,2 @@
 # Roda o csv_downloader.py e csv_processor.py a cada 1 hora
-*/5 * * * * poetry run python /app/modules/csv_downloader.py && poetry run python /app/modules/csv_processor.py >> /var/log/cron.log 2>&1
+0 * * * * poetry run python /app/modules/csv_downloader.py && poetry run python /app/modules/csv_processor.py >> /var/log/cron.log 2>&1
