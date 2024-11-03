@@ -14,11 +14,13 @@ router = APIRouter()
 URL_BASE = "http://vitibrasil.cnpuv.embrapa.br"
 
 
-def fetch_data_with_fallback(endpoint: str, csv_filename: str, year: int = None):
+def fetch_data_with_fallback(
+    callback, endpoint: str, csv_filename: str, year: int = None
+):
     if year is None:
         year = datetime.datetime.now().year - 1
     url = f"{URL_BASE}/{endpoint}&ano={year}"
-    status_code, data = fetch_json_data(url_base=url)
+    status_code, data = callback(url_base=url)
     if status_code != 200:
         logging.warning("Using alternative route, fetching from CSV")
         data = CsvRead.process_csv(csv_filename, year)
@@ -32,7 +34,9 @@ def get_data_producao(year: int = None, username: str = Depends(verify_credentia
     Obter dados de produção agrícola para o ano especificado.
     - **year**: Ano de referência (opcional). Se não especificado, utiliza o ano anterior.
     """
-    return fetch_data_with_fallback("index.php?opcao=opt_02", "Producao.csv", year)
+    return fetch_data_with_fallback(
+        fetch_json_data, "index.php?opcao=opt_02", "Producao.csv", year
+    )
 
 
 @router.get("/processamento/viniferas/{year}")
@@ -45,7 +49,10 @@ def get_data_processamento_viniferas(
     - **year**: Ano de referência (opcional). Se não especificado, utiliza o ano anterior.
     """
     return fetch_data_with_fallback(
-        "index.php?opcao=opt_03&subopcao=subopt_01", "ProcessaViniferas.csv", year
+        fetch_json_data,
+        "index.php?opcao=opt_03&subopcao=subopt_01",
+        "ProcessaViniferas.csv",
+        year,
     )
 
 
@@ -59,7 +66,10 @@ def get_data_processamento_americanas_hibridas(
     - **year**: Ano de referência (opcional). Se não especificado, utiliza o ano anterior.
     """
     return fetch_data_with_fallback(
-        "index.php?opcao=opt_03&subopcao=subopt_02", "ProcessaAmericanas.csv", year
+        fetch_json_data,
+        "index.php?opcao=opt_03&subopcao=subopt_02",
+        "ProcessaAmericanas.csv",
+        year,
     )
 
 
@@ -73,7 +83,10 @@ def get_data_processamento_uvas_mesa(
     - **year**: Ano de referência (opcional). Se não especificado, utiliza o ano anterior.
     """
     return fetch_data_with_fallback(
-        "index.php?opcao=opt_03&subopcao=subopt_03", "ProcessaMesa.csv", year
+        fetch_json_data,
+        "index.php?opcao=opt_03&subopcao=subopt_03",
+        "ProcessaMesa.csv",
+        year,
     )
 
 
@@ -87,7 +100,10 @@ def get_data_processamento_sem_classificacao(
     - **year**: Ano de referência (opcional). Se não especificado, utiliza o ano anterior.
     """
     return fetch_data_with_fallback(
-        "index.php?opcao=opt_03&subopcao=subopt_04", "ProcessaSemclass.csv", year
+        fetch_json_data,
+        "index.php?opcao=opt_03&subopcao=subopt_04",
+        "ProcessaSemclass.csv",
+        year,
     )
 
 
@@ -100,7 +116,9 @@ def get_data_comercializacao(
     Obter dados de comercialização agrícola para o ano especificado.
     - **year**: Ano de referência (opcional). Se não especificado, utiliza o ano anterior.
     """
-    return fetch_data_with_fallback("index.php?opcao=opt_04", "Comercio.csv", year)
+    return fetch_data_with_fallback(
+        fetch_json_data, "index.php?opcao=opt_04", "Comercio.csv", year
+    )
 
 
 @router.get("/importacao/vinhos_de_mesa/{year}")
@@ -113,7 +131,10 @@ def get_data_importacao_vinhos_mesa(
     - **year**: Ano de referência (opcional). Se não especificado, utiliza o ano anterior.
     """
     return fetch_data_with_fallback(
-        "index.php?subopcao=subopt_01&opcao=opt_05", "ImpVinhos.csv", year
+        fetch_json_data_ie,
+        "index.php?subopcao=subopt_01&opcao=opt_05",
+        "ImpVinhos.csv",
+        year,
     )
 
 
@@ -127,7 +148,10 @@ def get_data_importacao_espumantes(
     - **year**: Ano de referência (opcional). Se não especificado, utiliza o ano anterior.
     """
     return fetch_data_with_fallback(
-        "index.php?subopcao=subopt_02&opcao=opt_05", "ImpEspumantes.csv", year
+        fetch_json_data_ie,
+        "index.php?subopcao=subopt_02&opcao=opt_05",
+        "ImpEspumantes.csv",
+        year,
     )
 
 
@@ -141,7 +165,10 @@ def get_data_importacao_uvas_frescas(
     - **year**: Ano de referência (opcional). Se não especificado, utiliza o ano anterior.
     """
     return fetch_data_with_fallback(
-        "index.php?subopcao=subopt_03&opcao=opt_05", "ImpFrescas.csv", year
+        fetch_json_data_ie,
+        "index.php?subopcao=subopt_03&opcao=opt_05",
+        "ImpFrescas.csv",
+        year,
     )
 
 
@@ -155,7 +182,10 @@ def get_data_importacao_uvas_passas(
     - **year**: Ano de referência (opcional). Se não especificado, utiliza o ano anterior.
     """
     return fetch_data_with_fallback(
-        "index.php?subopcao=subopt_04&opcao=opt_05", "ImpPassas.csv", year
+        fetch_json_data_ie,
+        "index.php?subopcao=subopt_04&opcao=opt_05",
+        "ImpPassas.csv",
+        year,
     )
 
 
@@ -169,7 +199,10 @@ def get_data_importacao_suco_uva(
     - **year**: Ano de referência (opcional). Se não especificado, utiliza o ano anterior.
     """
     return fetch_data_with_fallback(
-        "index.php?subopcao=subopt_05&opcao=opt_05", "ImpSuco.csv", year
+        fetch_json_data_ie,
+        "index.php?subopcao=subopt_05&opcao=opt_05",
+        "ImpSuco.csv",
+        year,
     )
 
 
@@ -183,7 +216,10 @@ def get_data_exportacao_vinhos_mesa(
     - **year**: Ano de referência (opcional). Se não especificado, utiliza o ano anterior.
     """
     return fetch_data_with_fallback(
-        "index.php?subopcao=subopt_01&opcao=opt_06", "ExpVinho.csv", year
+        fetch_json_data_ie,
+        "index.php?subopcao=subopt_01&opcao=opt_06",
+        "ExpVinho.csv",
+        year,
     )
 
 
@@ -197,7 +233,10 @@ def get_data_exportacao_espumantes(
     - **year**: Ano de referência (opcional). Se não especificado, utiliza o ano anterior.
     """
     return fetch_data_with_fallback(
-        "index.php?subopcao=subopt_02&opcao=opt_06", "ExpEspumantes.csv", year
+        fetch_json_data_ie,
+        "index.php?subopcao=subopt_02&opcao=opt_06",
+        "ExpEspumantes.csv",
+        year,
     )
 
 
@@ -211,7 +250,10 @@ def get_data_exportacao_uvas_frescas(
     - **year**: Ano de referência (opcional). Se não especificado, utiliza o ano anterior.
     """
     return fetch_data_with_fallback(
-        "index.php?subopcao=subopt_03&opcao=opt_06", "ExpUva.csv", year
+        fetch_json_data_ie,
+        "index.php?subopcao=subopt_03&opcao=opt_06",
+        "ExpUva.csv",
+        year,
     )
 
 
@@ -225,5 +267,8 @@ def get_data_exportacao_suco_uva(
     - **year**: Ano de referência (opcional). Se não especificado, utiliza o ano anterior.
     """
     return fetch_data_with_fallback(
-        "index.php?subopcao=subopt_04&opcao=opt_06", "ExpSuco.csv", year
+        fetch_json_data_ie,
+        "index.php?subopcao=subopt_04&opcao=opt_06",
+        "ExpSuco.csv",
+        year,
     )
